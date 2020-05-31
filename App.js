@@ -39,7 +39,11 @@ export default class App extends Component {
     this.state = {
      
       current: 0,
-      current2:0
+      current2:0,
+      lap:0,
+      lap2:0,
+      lapArr:[],
+      start:false
       
     }
   }
@@ -59,7 +63,8 @@ export default class App extends Component {
   start(){
     this.setState({ 
       current2: new Date().getTime(),
-      lap2: new Date().getTime()
+      lap2: new Date().getTime(),
+      start: true
      },()=>this.icreamenter())
   }
   
@@ -76,11 +81,10 @@ export default class App extends Component {
 
   stop(){
     clearTimeout(this.timer)
-    this.setState({
-      now: 0,
-      now2:0,
-    })
+  }
 
+  resume(){
+      this.icreamenter()
   }
 
    Timer() {
@@ -110,6 +114,26 @@ export default class App extends Component {
       </View>
     )
   }
+
+
+  
+
+  reset() {
+
+    this.setState({ 
+      current2: new Date().getTime(),
+      lap2: new Date().getTime(),
+      start: true,
+      lapArr:[]
+     })
+    clearTimeout(this.state.interval)
+
+}
+       
+
+
+
+
   
 
   
@@ -136,10 +160,35 @@ stop(){
 
  
 lapHandle(){
-  this.setState({ 
-    lap2: new Date().getTime()
-  })
+  if(this.state.start==true){
+    this.state.lap2=new Date().getTime()
+    this.state.lapArr.splice(0, 0, this.state.lap)
+    this.forceUpdate()
+  }
+
 }
+
+  lapShow() {
+    return (
+      this.state.lapArr.map((data, index) => {
+        let duration = moment.duration(data)
+        let centiseconds = Math.floor(duration.milliseconds() / 10)
+
+        return (
+          <View style={styles.lap} key={index}>
+            <Text style={styles.lapStyle}>Lap {this.state.lapArr.length - index}</Text>
+            <View style={styles.timerContainer}>
+              <Text style={styles.timer} >{duration.hours()}:</Text>
+              <Text style={styles.timer} >{duration.minutes()}:</Text>
+              <Text style={styles.timer} >{duration.seconds()}:</Text>
+              <Text style={styles.timer} >{centiseconds}</Text>
+            </View>
+          </View>
+
+        )
+      })
+    )
+  }
 
 
  
@@ -153,6 +202,8 @@ lapHandle(){
 
         {this.Timer()}
         {this.Laper()}
+
+        {this.lapShow}
        
           <ButtonsRow>
            
@@ -162,20 +213,61 @@ lapHandle(){
               background='#1B361F'
               onPress={()=>this.start()}
             />
-         
-            <RoundButton
+         {
+           this.state.start == true ?
+
+           <RoundButton
               title='Stop'
               color='#E33935'
               background='#3C1715'
               onPress={()=>this.stop()}
             />
 
+            :
+
             <RoundButton
+              title='Resume'
+              color='#E33935'
+              background='#3C1715'
+              onPress={()=>this.resume()}
+            />
+
+
+         }
+
+
+      {
+           this.state.start == true ?
+
+           <RoundButton
+              title='Reset'
+              color='#E33935'
+              background='#3C1715'
+              onPress={()=>this.resume()}
+            />
+
+            :
+
+           <Text></Text>
+
+         }
+  
+
+      {
+           this.state.start == true ?
+
+           <RoundButton
               title='Lap'
-              color='#FFFFFF'
-              background='#3D3D3D'
+              color='#E33935'
+              background='#3C1715'
               onPress={()=>this.lapHandle()}
             />
+
+            :
+
+           <Text></Text>
+
+         }
             
          
       
