@@ -37,19 +37,20 @@ export default class App extends Component {
   constructor(props) {
     super(props)
     this.state = {
-     
+
       current: 0,
-      current2:0,
-      lap:0,
-      lap2:0,
-      lapArr:[],
-      start:false
-      
+      current2: 0,
+      lap: 0,
+      lap2: 0,
+      lapArr: [],
+      start: false
+
     }
+    this.timer = 0
   }
 
   componentDidMount() {
-    
+
   }
 
   componentWillUnmount() {
@@ -59,36 +60,39 @@ export default class App extends Component {
 
 
 
-  
-  start(){
-    this.setState({ 
+
+  start() {
+    this.setState({
       current2: new Date().getTime(),
       lap2: new Date().getTime(),
       start: true
-     },()=>this.icreamenter())
+    }, () => this.icreamenter())
   }
-  
-  icreamenter(){
+
+  icreamenter() {
     this.timer = setTimeout(() => {
-      this.state.current=new Date().getTime()-this.state.current2
-      this.state.lap=new Date().getTime()-this.state.lap2
+      this.state.current = new Date().getTime() - this.state.current2
+      this.state.lap = new Date().getTime() - this.state.lap2
       this.forceUpdate()
       this.icreamenter()
     }, 0)
   }
 
-  
 
-  stop(){
+
+  stop() {
+    this.setState({
+      start: false
+    })
     clearTimeout(this.timer)
   }
 
-  resume(){
-      this.icreamenter()
+  resume() {
+    this.icreamenter()
   }
 
-   Timer() {
-    
+  Timer() {
+
     let duration = moment.duration(this.state.current)
     let centiseconds = Math.floor(duration.milliseconds() / 10)
     return (
@@ -102,7 +106,7 @@ export default class App extends Component {
   }
 
   Laper() {
-    
+
     let duration = moment.duration(this.state.lap)
     let centiseconds = Math.floor(duration.milliseconds() / 10)
     return (
@@ -116,57 +120,57 @@ export default class App extends Component {
   }
 
 
-  
+
 
   reset() {
 
-    this.setState({ 
+    this.setState({
       current2: new Date().getTime(),
       lap2: new Date().getTime(),
-      start: true,
-      lapArr:[]
-     })
+      start: false,
+      lapArr: []
+    })
     clearTimeout(this.state.interval)
 
-}
-       
-
-
-
-
-  
-
-  
-/*
-
- start(){
-  this.timer = setInterval(() => {
-    this.setState({ now: this.state.now+1})
-  }, 100)
-}
-
-
-
-stop(){
-  this.setState({
-    now: 0,
-  })
-  clearInterval(this.timer)
-}
-
-*/
-
-
-
- 
-lapHandle(){
-  if(this.state.start==true){
-    this.state.lap2=new Date().getTime()
-    this.state.lapArr.splice(0, 0, this.state.lap)
-    this.forceUpdate()
   }
 
-}
+
+
+
+
+
+
+
+  /*
+  
+   start(){
+    this.timer = setInterval(() => {
+      this.setState({ now: this.state.now+1})
+    }, 100)
+  }
+  
+  
+  
+  stop(){
+    this.setState({
+      now: 0,
+    })
+    clearInterval(this.timer)
+  }
+  
+  */
+
+
+
+
+  lapHandle() {
+    if (this.state.start == true) {
+      this.state.lap2 = new Date().getTime()
+      this.state.lapArr.splice(0, 0, this.state.lap)
+      this.forceUpdate()
+    }
+
+  }
 
   lapShow() {
     return (
@@ -191,11 +195,11 @@ lapHandle(){
   }
 
 
- 
+
 
   render() {
- 
-     
+
+
 
     return (
       <View style={styles.container}>
@@ -203,78 +207,81 @@ lapHandle(){
         {this.Timer()}
         {this.Laper()}
 
-        {this.lapShow}
-       
-          <ButtonsRow>
-           
-            <RoundButton
-              title='Start'
-              color='#50D167'
-              background='#1B361F'
-              onPress={()=>this.start()}
-            />
-         {
-           this.state.start == true ?
-
-           <RoundButton
-              title='Stop'
-              color='#E33935'
-              background='#3C1715'
-              onPress={()=>this.stop()}
-            />
-
-            :
-
-            <RoundButton
-              title='Resume'
-              color='#E33935'
-              background='#3C1715'
-              onPress={()=>this.resume()}
-            />
 
 
-         }
+        <ButtonsRow>
+
+          <RoundButton
+            title='Start'
+            color='#50D167'
+            background='#1B361F'
+            onPress={() => this.start()}
+          />
+          {
+            this.state.start == true ?
+
+              <RoundButton
+                title='Stop'
+                color='#E33935'
+                background='#3C1715'
+                onPress={() => this.stop()}
+              />
+
+              :
+              <Text></Text>
 
 
-      {
-           this.state.start == true ?
+          }
 
-           <RoundButton
-              title='Reset'
-              color='#E33935'
-              background='#3C1715'
-              onPress={()=>this.resume()}
-            />
 
-            :
+          {
+            this.state.start == false && this.timer == 0 ?
 
-           <Text></Text>
+              <RoundButton
+                title='Stop'
+                color='#E33935'
+                background='#3C1715'
+                onPress={() => this.resume()}
+              />
 
-         }
-  
+              :
 
-      {
-           this.state.start == true ?
+              <Text></Text>
 
-           <RoundButton
-              title='Lap'
-              color='#E33935'
-              background='#3C1715'
-              onPress={()=>this.lapHandle()}
-            />
 
-            :
+          }
 
-           <Text></Text>
 
-         }
-            
          
-      
-          </ButtonsRow>
-     
-       
-       
+
+
+          {
+            this.state.start == true ?
+
+              <RoundButton
+                title='Lap'
+                color='#E33935'
+                background='#3C1715'
+                onPress={() => this.lapHandle()}
+              />
+
+              :
+
+              <Text></Text>
+
+          }
+
+
+
+        </ButtonsRow>
+        <ScrollView>
+          {this.lapShow()}
+
+        </ScrollView>
+
+
+
+
       </View>
     )
   }
@@ -295,7 +302,7 @@ const styles = StyleSheet.create({
     width: 50,
   },
 
-  
+
 
   button: {
     width: 80,
