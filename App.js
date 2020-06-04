@@ -43,7 +43,8 @@ export default class App extends Component {
       lap: 0,
       lap2: 0,
       lapArr: [],
-      start: false
+      start: false,
+      initial: true
 
     }
     this.timer = 0
@@ -65,7 +66,8 @@ export default class App extends Component {
     this.setState({
       current2: new Date().getTime(),
       lap2: new Date().getTime(),
-      start: true
+      start: true,
+      initial: false
     }, () => this.icreamenter())
   }
 
@@ -88,6 +90,9 @@ export default class App extends Component {
   }
 
   resume() {
+    this.setState({
+      start: true
+    })
     this.icreamenter()
   }
 
@@ -124,13 +129,14 @@ export default class App extends Component {
 
   reset() {
 
-    this.setState({
-      current2: new Date().getTime(),
-      lap2: new Date().getTime(),
-      start: false,
-      lapArr: []
-    })
-    clearTimeout(this.state.interval)
+    // this.setState({
+    //   current2: new Date().getTime(),
+    //   lap2: new Date().getTime(),
+    //   start: false,
+    //   lapArr: []
+    // })
+    
+    clearTimeout(this.timer)
 
   }
 
@@ -207,82 +213,95 @@ export default class App extends Component {
         {this.Timer()}
         {this.Laper()}
 
-
-
         <ButtonsRow>
 
-          <RoundButton
-            title='Start'
-            color='#50D167'
-            background='#1B361F'
-            onPress={() => this.start()}
-          />
-          {
-            this.state.start == true ?
+        {
+          this.state.initial == true ?
 
-              <RoundButton
-                title='Stop'
-                color='#E33935'
-                background='#3C1715'
-                onPress={() => this.stop()}
-              />
+            <RoundButton
+              title='Start'
+              color='#50D167'
+              background='#1B361F'
+              onPress={() => this.start()}
+            />
 
-              :
-              <Text></Text>
-
-
-          }
+            :
+            <RoundButton
+              title='Reset'
+              color='#50D167'
+              background='#1B361F'
+              onPress={() => this.reset()}
+            />
 
 
-          {
-            this.state.start == false && this.timer == 0 ?
 
-              <RoundButton
-                title='Stop'
-                color='#E33935'
-                background='#3C1715'
-                onPress={() => this.resume()}
-              />
+        }
+        {
+          this.state.start == true ?
 
-              :
+            <RoundButton
+              title='Stop'
+              color='#E33935'
+              background='#3C1715'
+              onPress={() => this.stop()}
+            />
 
-              <Text></Text>
-
-
-          }
+            :
+            <Text></Text>
 
 
-         
+        }
 
 
-          {
-            this.state.start == true ?
+        {
+          this.state.start == false && this.timer !== 0 ?
 
-              <RoundButton
-                title='Lap'
-                color='#E33935'
-                background='#3C1715'
-                onPress={() => this.lapHandle()}
-              />
+            <RoundButton
+              title='Resume'
+              color='#E33935'
+              background='#3C1715'
+              onPress={() => this.resume()}
+            />
 
-              :
+            :
 
-              <Text></Text>
+            <Text></Text>
 
-          }
+
+        }
+
+
+
+
+
+        {
+          this.state.start == true ?
+
+            <RoundButton
+              title='Lap'
+              color='#E33935'
+              background='#3C1715'
+              onPress={() => this.lapHandle()}
+            />
+
+            :
+
+            <Text></Text>
+
+        }
 
 
 
         </ButtonsRow>
-        <ScrollView>
-          {this.lapShow()}
+      <ScrollView>
+        {this.lapShow()}
 
-        </ScrollView>
-
-
+      </ScrollView>
 
 
-      </View>
+
+
+      </View >
     )
   }
 }
@@ -300,6 +319,13 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '200',
     width: 50,
+  },
+
+  lapStyle: {
+    color: '#FFFFFF',
+    fontSize: 15,
+    fontWeight: '200'
+   
   },
 
 
