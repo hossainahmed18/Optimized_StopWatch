@@ -44,7 +44,8 @@ export default class App extends Component {
       lap2: 0,
       lapArr: [],
       start: false,
-      initial: true
+      resumeTime: 0,
+      resumeLapTime:0
 
     }
     this.timer = 0
@@ -55,7 +56,7 @@ export default class App extends Component {
   }
 
   componentWillUnmount() {
-    clearInterval(this.timer)
+    clearTimeout(this.timer)
   }
 
 
@@ -67,7 +68,7 @@ export default class App extends Component {
       current2: new Date().getTime(),
       lap2: new Date().getTime(),
       start: true,
-      initial: false
+
     }, () => this.icreamenter())
   }
 
@@ -84,16 +85,22 @@ export default class App extends Component {
 
   stop() {
     this.setState({
-      start: false
+      start: false,
+      resumeTime : this.state.current,
+      resumeLapTime: this.state.lap
     })
     clearTimeout(this.timer)
   }
 
   resume() {
     this.setState({
-      start: true
+      start: true,
+      current2: new Date().getTime()-this.state.resumeTime,
+      lap2: new Date().getTime()-this.state.resumeLapTime,
+    },()=>{
+      this.icreamenter()
     })
-    this.icreamenter()
+    
   }
 
   Timer() {
@@ -129,14 +136,16 @@ export default class App extends Component {
 
   reset() {
 
-    // this.setState({
-    //   current2: new Date().getTime(),
-    //   lap2: new Date().getTime(),
-    //   start: false,
-    //   lapArr: []
-    // })
-    
-    clearTimeout(this.timer)
+    this.setState({
+      current2: 0,
+      lap2: 0,
+      current: 0,
+      lap: 0,
+      start: false,
+      lapArr: []
+    }, () => {
+      clearTimeout(this.timer)
+    })
 
   }
 
@@ -212,94 +221,57 @@ export default class App extends Component {
 
         {this.Timer()}
         {this.Laper()}
-
         <ButtonsRow>
 
-        {
-          this.state.initial == true ?
-
-            <RoundButton
-              title='Start'
-              color='#50D167'
-              background='#1B361F'
-              onPress={() => this.start()}
-            />
-
-            :
-            <RoundButton
-              title='Reset'
-              color='#50D167'
-              background='#1B361F'
-              onPress={() => this.reset()}
-            />
+          <RoundButton
+            title='Reset'
+            color='#50D167'
+            background='#1B361F'
+            onPress={() => this.reset()}
+          />
 
 
+          {
+            this.state.start == false && this.state.current2 == 0 && this.state.current == 0 && this.state.lap2 == 0 && this.state.lap == 0 ?
 
-        }
-        {
-          this.state.start == true ?
+              <RoundButton
+                title='Start'
+                color='#50D167'
+                background='#1B361F'
+                onPress={() => this.start()}
+              />
+              :
+              this.state.start == true ?
+                <RoundButton
+                  title='Stop'
+                  color='#E33935'
+                  background='#3C1715'
+                  onPress={() => this.stop()}
+                />
+                :
+                <RoundButton
+                  title='Resume'
+                  color='#E33935'
+                  background='#3C1715'
+                  onPress={() => this.resume()}
+                />
+          }
 
-            <RoundButton
-              title='Stop'
-              color='#E33935'
-              background='#3C1715'
-              onPress={() => this.stop()}
-            />
-
-            :
-            <Text></Text>
-
-
-        }
-
-
-        {
-          this.state.start == false && this.timer !== 0 ?
-
-            <RoundButton
-              title='Resume'
-              color='#E33935'
-              background='#3C1715'
-              onPress={() => this.resume()}
-            />
-
-            :
-
-            <Text></Text>
-
-
-        }
-
-
-
-
-
-        {
-          this.state.start == true ?
-
-            <RoundButton
-              title='Lap'
-              color='#E33935'
-              background='#3C1715'
-              onPress={() => this.lapHandle()}
-            />
-
-            :
-
-            <Text></Text>
-
-        }
-
-
-
+          <RoundButton
+            title='Lap'
+            color='#E33935'
+            background='#3C1715'
+            onPress={() => this.lapHandle()}
+          />
         </ButtonsRow>
-      <ScrollView>
-        {this.lapShow()}
-
-      </ScrollView>
 
 
 
+
+
+        <ScrollView>
+          {this.lapShow()}
+        </ScrollView>
 
       </View >
     )
@@ -325,7 +297,7 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '200'
-   
+
   },
 
 
